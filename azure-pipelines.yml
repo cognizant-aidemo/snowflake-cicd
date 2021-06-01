@@ -9,7 +9,6 @@ trigger:
     - main
   paths:
     include:
-    - /Snowchange-scripts
     - /Snowchange-scripts/tpcds
 pool:
   vmImage: 'ubuntu-latest'
