@@ -1,0 +1,34 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+  branches:
+    include:
+    - main
+  paths:
+    include:
+    - /migrations
+pool:
+  vmImage: 'ubuntu-latest'
+variables:
+- group: snowflaketest
+steps:
+- task: UsePythonVersion@0
+  displayName: 'Use Python 3.8.x'
+  inputs:
+    versionSpec: '3.8.x'
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: |
+      echo 'Starting bash task'
+      echo "PROJECT_FOLDER $(PROJECT_FOLDER)"
+      python --version
+      echo 'Step 1: Installing snowchange'
+      pip install snowchange --upgrade
+      echo 'Step 2: Running snowchange'
+      snowchange -f $(PROJECT_FOLDER)/migrations -a $(SF_ACCOUNT) -u $(SF_USERNAME) -r $(SF_ROLE) -w $(SF_WAREHOUSE) -d $(SF_DATABASE) -c $(SF_DATABASE).SNOWCHANGE.CHANGE_HISTORY --create-change-history-table
+  env:
+    SNOWFLAKE_PASSWORD: $(SF_PASSWORD)
